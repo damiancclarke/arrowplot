@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 julio 23, 2014 @ 19:09:56
+*! Version 0.0.0 julio 23, 2014 @ 21:03:18
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -13,8 +13,11 @@ program arrowplot, eclass
 	syntax varlist(min=2 max=2) [if] [in] [pweight fweight aweight iweight]
 	, LINEsize(real) GROUPvar(varname)
 	[
+	  groupname(string)
 	  CONTrols(varlist)
-	  GRAPHopts(passthru)
+	  xtitle(passthru) ytitle(passthru) title(passthru) subtitle(passthru)
+	  scheme(passthru) note(passthru) graphopts(string asis)
+	  regopts(string asis)
 	]
 	;
 	#delimit cr
@@ -28,6 +31,7 @@ program arrowplot, eclass
 
 	tokenize `varlist'
 
+	if "`groupname'"=="" local groupname "Group"
 	*=============================================================================
 	*=== (2) Rescale X so size of line will be equal regardless of slope
 	*=============================================================================
@@ -47,11 +51,14 @@ program arrowplot, eclass
 	*=============================================================================
 	levelsof `groupvar', local(levels)
 	foreach c of local levels {
-		cap reg `1' `reX' `controls' if `groupvar'==`"`c'"' `in' [`weight' `exp']
-		if _rc==0 replace `intercept'=_b[`reX'] if `groupvar'==`"`c'"'
+		if "`if'"=="" local ifplus if `groupvar'==`"`c'"'
+		else local ifplus `if'&`groupvar'==`"`c'"'
+
+		cap reg `1' `reX' `controls' `ifplus' `in' [`weight' `exp'], `regopts'
+		if _rc==0 replace `intercept'=_b[`reX'] `ifplus'
 	}
 	preserve	
-	collapse `1' `2' `reX' `scale' `intercept', by(`groupvar')
+	collapse `1' `2' `reX' `scale' `intercept' `if' `in' [`weight' `exp'], by(`groupvar')
 
 	*=============================================================================
 	*=== (4) Determine start and end point of lines (depends on slope and length)
@@ -66,12 +73,14 @@ program arrowplot, eclass
 
 	replace `x1'=`x1'/`scale'
 	replace `x2'=`x2'/`scale'
-	
+
 	*=============================================================================
 	*=== (5) Plot
 	*=============================================================================
 	twoway pcarrow `y1' `x1' `y2' `x2' || scatter `1' `2', ///
-	  mlabel(`groupvar') mlabsize(vsmall) scheme(s1color) 
+	  mlabel(`groupvar') mlabsize(vsmall)  `graphopts' ///
+	  `xtitle' `ytitle' `title' `subtitle' `scheme' `note' ///
+	  legend(label(1 "Within `groupname' Variation") label(2 "`groupname' Mean"))
 	
 	restore
 end
