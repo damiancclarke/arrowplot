@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 julio 23, 2014 @ 21:39:26
+*! Version 0.0.0 julio 23, 2014 @ 21:54:50
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -90,3 +90,5 @@ end
 *TO DO:
 *   - make fvable tsable
 *   - option to store inter variable   
+*   - error capture.
+*      > At moment using non-string groupvar won't work & won't throw error...
