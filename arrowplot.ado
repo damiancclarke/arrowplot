@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 julio 23, 2014 @ 21:39:26
+*! Version 0.0.0 julio 23, 2014 @ 21:03:18
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -16,7 +16,7 @@ program arrowplot, eclass
 	  groupname(string)
 	  CONTrols(varlist)
 	  xtitle(passthru) ytitle(passthru) title(passthru) subtitle(passthru)
-	  scheme(passthru) note(passthru) graphopts(string asis)
+	  scheme(passthru) note(passthru) *
 	  regopts(string asis)
 	]
 	;
@@ -35,18 +35,17 @@ program arrowplot, eclass
 	*=============================================================================
 	*=== (2) Rescale X so size of line will be equal regardless of slope
 	*=============================================================================
-	quietly {
-		bys `groupvar': egen `my'=mean(`1')
-		bys `groupvar': egen `mx'=mean(`2')
-		foreach var in x y {
-			egen `min`var''=min(`m`var'')
-			egen `max`var''=max(`m`var'')
-			gen `ran`var''=`min`var''-`max`var''
-		}
-
-		gen `scale'=`rany'/`ranx'
-		gen `reX'  = `2'*`scale'
+	bys `groupvar': egen `my'=mean(`1')
+	bys `groupvar': egen `mx'=mean(`2')
+	foreach var in x y {
+		egen `min`var''=min(`m`var'')
+		egen `max`var''=max(`m`var'')
+		gen `ran`var''=`min`var''-`max`var''
 	}
+
+	gen `scale'=`rany'/`ranx'
+	gen `reX'  = `2'*`scale'
+	
 	*=============================================================================
 	*=== (3) Calculate intra-correlation (conditional upon any controls)
 	*=============================================================================
@@ -64,29 +63,24 @@ program arrowplot, eclass
 	*=============================================================================
 	*=== (4) Determine start and end point of lines (depends on slope and length)
 	*=============================================================================
-	quietly {
-		gen  `delta'  = sqrt((`linesize'^2)/(`intercept'^2+1))
-		gen  `x1'     = `reX'-`delta'
-		gen  `x2'     = `reX'+`delta'
-		gen  `y1'     = `1'-`delta'*`intercept'
-		gen  `y2'     = `1'+`delta'*`intercept'
+	gen  `delta'  = sqrt((`linesize'^2)/(`intercept'^2+1))
+	gen  `x1'     = `reX'-`delta'
+	gen  `x2'     = `reX'+`delta'
+	gen  `y1'     = `1'-`delta'*`intercept'
+	gen  `y2'     = `1'+`delta'*`intercept'
 	
-		gen `line'  = (`y2'-`y1')^2+(`x2'-`x1')^2
+	gen `line'  = (`y2'-`y1')^2+(`x2'-`x1')^2
 
-		replace `x1'=`x1'/`scale'
-		replace `x2'=`x2'/`scale'
-	}
+	replace `x1'=`x1'/`scale'
+	replace `x2'=`x2'/`scale'
+
 	*=============================================================================
 	*=== (5) Plot
 	*=============================================================================
 	twoway pcarrow `y1' `x1' `y2' `x2' || scatter `1' `2', ///
-	  mlabel(`groupvar') mlabsize(vsmall)  `graphopts' ///
+	  mlabel(`groupvar') mlabsize(vsmall)  `options' ///
 	  `xtitle' `ytitle' `title' `subtitle' `scheme' `note' ///
 	  legend(label(1 "Within `groupname' Variation") label(2 "`groupname' Mean"))
 	
 	restore
 end
-
-*TO DO:
-*   - make fvable tsable
-*   - option to store inter variable   
