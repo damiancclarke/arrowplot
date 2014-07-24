@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 julio 23, 2014 @ 21:03:18
+*! Version 0.0.0 julio 23, 2014 @ 21:39:26
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -35,17 +35,18 @@ program arrowplot, eclass
 	*=============================================================================
 	*=== (2) Rescale X so size of line will be equal regardless of slope
 	*=============================================================================
-	bys `groupvar': egen `my'=mean(`1')
-	bys `groupvar': egen `mx'=mean(`2')
-	foreach var in x y {
-		egen `min`var''=min(`m`var'')
-		egen `max`var''=max(`m`var'')
-		gen `ran`var''=`min`var''-`max`var''
-	}
+	quietly {
+		bys `groupvar': egen `my'=mean(`1')
+		bys `groupvar': egen `mx'=mean(`2')
+		foreach var in x y {
+			egen `min`var''=min(`m`var'')
+			egen `max`var''=max(`m`var'')
+			gen `ran`var''=`min`var''-`max`var''
+		}
 
-	gen `scale'=`rany'/`ranx'
-	gen `reX'  = `2'*`scale'
-	
+		gen `scale'=`rany'/`ranx'
+		gen `reX'  = `2'*`scale'
+	}
 	*=============================================================================
 	*=== (3) Calculate intra-correlation (conditional upon any controls)
 	*=============================================================================
@@ -63,17 +64,18 @@ program arrowplot, eclass
 	*=============================================================================
 	*=== (4) Determine start and end point of lines (depends on slope and length)
 	*=============================================================================
-	gen  `delta'  = sqrt((`linesize'^2)/(`intercept'^2+1))
-	gen  `x1'     = `reX'-`delta'
-	gen  `x2'     = `reX'+`delta'
-	gen  `y1'     = `1'-`delta'*`intercept'
-	gen  `y2'     = `1'+`delta'*`intercept'
+	quietly {
+		gen  `delta'  = sqrt((`linesize'^2)/(`intercept'^2+1))
+		gen  `x1'     = `reX'-`delta'
+		gen  `x2'     = `reX'+`delta'
+		gen  `y1'     = `1'-`delta'*`intercept'
+		gen  `y2'     = `1'+`delta'*`intercept'
 	
-	gen `line'  = (`y2'-`y1')^2+(`x2'-`x1')^2
+		gen `line'  = (`y2'-`y1')^2+(`x2'-`x1')^2
 
-	replace `x1'=`x1'/`scale'
-	replace `x2'=`x2'/`scale'
-
+		replace `x1'=`x1'/`scale'
+		replace `x2'=`x2'/`scale'
+	}
 	*=============================================================================
 	*=== (5) Plot
 	*=============================================================================
@@ -84,3 +86,7 @@ program arrowplot, eclass
 	
 	restore
 end
+
+*TO DO:
+*   - make fvable tsable
+*   - option to store inter variable   
