@@ -19,9 +19,11 @@ foreach num of numlist 10(-1)1 {
 tokenize `return'
 gen income=.
 gen educ=group+rnormal()
+gen x2=rnormal()
 
 foreach num of numlist 1(1)10 {
 	replace income=``num'' * educ + rnormal() if group==`num'
 }
 
-arrowplot income educ, line(3) groupvar(groupName)
+arrowplot income educ, line(3) groupvar(groupName) gen(intervar) regopts(robust) /*
+*/ title("Test Graph") control(x2)
