@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 agosto 17, 2014 @ 17:35:08
+*! Version 0.0.0 agosto 17, 2014 @ 19:40:37
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -21,7 +21,16 @@ program arrowplot, eclass
 	]
 	;
 	#delimit cr
-
+	*=============================================================================
+	*=== (0) Error capture
+	*=============================================================================
+	qui ds `groupvar', not(type string)
+	if "`r(varlist)'"=="`groupvar'" {
+		local er2 "Please regenerate group names as string prior to running"
+		dis as error "Group variable must be a string variable.  `er2'."
+		exit 107
+	}
+	
 	*=============================================================================
 	*=== (1) set-up temporary variables for line plots and beta estimates
 	*=============================================================================
@@ -84,8 +93,3 @@ program arrowplot, eclass
 	restore
 	if "`generate'"!="" replace `generate'=`generate'*`scale'
 end
-
-*TO DO:
-*   - option to store inter variable
-*   - error capture.
-*      > At moment using non-string groupvar won't work & won't throw error...
