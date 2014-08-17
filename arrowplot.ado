@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 agosto 17, 2014 @ 17:17:53
+*! Version 0.0.0 agosto 17, 2014 @ 17:35:08
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -17,7 +17,7 @@ program arrowplot, eclass
 	  CONTrols(varlist fv ts)
 	  *
 	  regopts(string asis)
-	  GENerate(string)
+	  GENerate(name min=1 max=1)
 	]
 	;
 	#delimit cr
@@ -54,7 +54,7 @@ program arrowplot, eclass
 		if "`if'"=="" local ifplus if `groupvar'==`"`c'"'
 		else local ifplus `if'&`groupvar'==`"`c'"'
 
-		cap reg `1' `reX' `controls' `ifplus' `in' [`weight' `exp'], `regopts'
+		qui reg `1' `reX' `controls' `ifplus' `in' [`weight' `exp'], `regopts'
 		if _rc==0 qui replace `intercept'=_b[`reX'] `ifplus'
 	}
 	if "`generate'"!="" gen `generate'=`intercept'
@@ -74,7 +74,6 @@ program arrowplot, eclass
 
 	qui replace `x1'=`x1'/`scale'
 	qui replace `x2'=`x2'/`scale'
-
 	*=============================================================================
 	*=== (5) Plot
 	*=============================================================================
@@ -83,6 +82,7 @@ program arrowplot, eclass
 	  legend(label(1 "Within `groupname' Variation") label(2 "`groupname' Mean"))
 	
 	restore
+	if "`generate'"!="" replace `generate'=`generate'*`scale'
 end
 
 *TO DO:
