@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 agosto 2, 2014 @ 23:31:20
+*! Version 0.0.0 agosto 17, 2014 @ 17:17:53
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -14,7 +14,7 @@ program arrowplot, eclass
 	, LINEsize(real) GROUPvar(varname)
 	[
 	  groupname(string)
-	  CONTrols(varlist)
+	  CONTrols(varlist fv ts)
 	  *
 	  regopts(string asis)
 	  GENerate(string)
@@ -86,7 +86,6 @@ program arrowplot, eclass
 end
 
 *TO DO:
-*   - make fvable tsable
 *   - option to store inter variable
 *   - error capture.
 *      > At moment using non-string groupvar won't work & won't throw error...
