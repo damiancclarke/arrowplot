@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 agosto 17, 2014 @ 19:40:37
+*! Version 0.0.0 agosto 17, 2014 @ 21:17:15
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -11,8 +11,9 @@ program arrowplot, eclass
 
 	#delimit ;
 	syntax varlist(min=2 max=2) [if] [in] [pweight fweight aweight iweight]
-	, LINEsize(real) GROUPvar(varname)
+	, GROUPvar(varname)
 	[
+	  LINEsize(numlist min=0 max=1)
 	  groupname(string)
 	  CONTrols(varlist fv ts)
 	  *
@@ -52,9 +53,10 @@ program arrowplot, eclass
 		gen `ran`var''=`min`var''-`max`var''
 	}
 
+
 	gen `scale'=`rany'/`ranx'
 	gen `reX'  = `2'*`scale'
-	
+
 	*=============================================================================
 	*=== (3) Calculate intra-correlation (conditional upon any controls)
 	*=============================================================================
@@ -63,13 +65,16 @@ program arrowplot, eclass
 		if "`if'"=="" local ifplus if `groupvar'==`"`c'"'
 		else local ifplus `if'&`groupvar'==`"`c'"'
 
-		qui reg `1' `reX' `controls' `ifplus' `in' [`weight' `exp'], `regopts'
+		cap reg `1' `reX' `controls' `ifplus' `in' [`weight' `exp'], `regopts'
 		if _rc==0 qui replace `intercept'=_b[`reX'] `ifplus'
 	}
 	if "`generate'"!="" gen `generate'=`intercept'
 	preserve	
 	collapse `1' `2' `reX' `scale' `intercept' `if' `in' [`weight' `exp'], by(`groupvar')
 
+	qui sum `1'
+	local scaledif = `r(max)'-`r(min)'
+	if "`linesize'"=="" local linesize = 0.10*`scaledif'
 	*=============================================================================
 	*=== (4) Determine start and end point of lines (depends on slope and length)
 	*=============================================================================
