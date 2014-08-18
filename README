@@ -1,0 +1,10 @@
+===============================================================================
+README for arrowplot code version 1.0.0
+
+yyyy-mm-dd: 2014-08-18
+contact: damian.clarke@economics.ox.ac.uk
+===============================================================================
+
+This folder contains the ado arrowplot.ado and the help file arrowplot.sthlp w-
+hich produce graphs showing inter- and intra-group variation of two variables 
+by overlaying arrows for intra-group (regression) trends on a scatter plot.
