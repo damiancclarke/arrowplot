@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 agosto 17, 2014 @ 23:30:18
+*! Version 1.0.0 agosto 18, 2014 @ 00:14:47
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -7,7 +7,7 @@
 
 cap program drop arrowplot
 program arrowplot, eclass
-	vers 11.0
+	vers 10.0
 
 	#delimit ;
 	syntax varlist(min=2 max=2) [if] [in] [pweight fweight aweight iweight]
