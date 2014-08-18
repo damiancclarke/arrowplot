@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 agosto 17, 2014 @ 21:17:15
+*! Version 0.0.0 agosto 17, 2014 @ 21:18:27
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -74,7 +74,7 @@ program arrowplot, eclass
 
 	qui sum `1'
 	local scaledif = `r(max)'-`r(min)'
-	if "`linesize'"=="" local linesize = 0.10*`scaledif'
+	if "`linesize'"=="" local linesize = 0.08*`scaledif'
 	*=============================================================================
 	*=== (4) Determine start and end point of lines (depends on slope and length)
 	*=============================================================================
