@@ -1,5 +1,5 @@
 *! arrowplot: Combined macro scatter and micro regression plot
-*! Version 0.0.0 agosto 17, 2014 @ 21:18:27
+*! Version 0.0.0 agosto 17, 2014 @ 23:30:18
 *! Author: Damian C. Clarke
 *! Department of Economics
 *! The University of Oxford
@@ -45,22 +45,23 @@ program arrowplot, eclass
 	*=============================================================================
 	*=== (2) Rescale X so size of line will be equal regardless of slope
 	*=============================================================================
-	bys `groupvar': egen `my'=mean(`1')
-	bys `groupvar': egen `mx'=mean(`2')
-	foreach var in x y {
-		egen `min`var''=min(`m`var'')
-		egen `max`var''=max(`m`var'')
-		gen `ran`var''=`min`var''-`max`var''
-	}
+	qui {
+		bys `groupvar': egen `my'=mean(`1')
+		bys `groupvar': egen `mx'=mean(`2')
+		foreach var in x y {
+			egen `min`var''=min(`m`var'')
+			egen `max`var''=max(`m`var'')
+			gen `ran`var''=`min`var''-`max`var''
+		}
 
-
-	gen `scale'=`rany'/`ranx'
-	gen `reX'  = `2'*`scale'
-
+		gen `scale'=`rany'/`ranx'
+		gen `reX'  = `2'*`scale'
+		}
+	
 	*=============================================================================
 	*=== (3) Calculate intra-correlation (conditional upon any controls)
 	*=============================================================================
-	levelsof `groupvar', local(levels)
+	qui levelsof `groupvar', local(levels)
 	foreach c of local levels {
 		if "`if'"=="" local ifplus if `groupvar'==`"`c'"'
 		else local ifplus `if'&`groupvar'==`"`c'"'
